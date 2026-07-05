@@ -30,6 +30,33 @@ struct RolloutParserTests {
     }
 
     @Test
+    func approvalRequiredCommandShowsWaitingForApproval() {
+        let parsed = parser.parse(lines: [
+            event("2026-06-24T20:00:00.000Z", "task_started"),
+            #"""
+            {"timestamp":"2026-06-24T20:00:10.000Z","type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"cmd\":\"printf 'ok'\",\"workdir\":\"/tmp\",\"sandbox_permissions\":\"require_escalated\",\"justification\":\"Do you want to run this?\"}"}}
+            """#,
+        ])
+
+        let active = parsed.activeAgent(thread: thread(), now: date("2026-06-24T20:00:20.000Z"), staleAfter: 600)
+        #expect(parsed.latestStatusLabel == "Waiting for approval")
+        #expect(active?.label == "Waiting for approval")
+    }
+
+    @Test
+    func approvalRequiredCommandOutputStillReviewsCommandOutput() {
+        let parsed = parser.parse(lines: [
+            event("2026-06-24T20:00:00.000Z", "task_started"),
+            #"""
+            {"timestamp":"2026-06-24T20:00:10.000Z","type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"cmd\":\"printf 'ok'\",\"workdir\":\"/tmp\",\"sandbox_permissions\":\"require_escalated\",\"justification\":\"Do you want to run this?\"}"}}
+            """#,
+            responseItem("2026-06-24T20:00:15.000Z", type: "function_call_output", fields: [:]),
+        ])
+
+        #expect(parsed.latestStatusLabel == "Reviewing output")
+    }
+
+    @Test
     func multipleOpenRolloutsCanBeCountedAsActiveAgents() {
         let first = parser.parse(lines: [
             event("2026-06-24T20:00:00.000Z", "task_started"),

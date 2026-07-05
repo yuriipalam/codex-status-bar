@@ -136,7 +136,9 @@ public final class RolloutParser {
                     if taskCurrentlyOpen() {
                         let label = StatusLabelMapper.label(forToolName: payload["name"] as? String)
                         latestToolLabel = label
-                        latestStatusLabel = label
+                        latestStatusLabel = Self.requiresApproval(arguments: payload["arguments"])
+                            ? "Waiting for approval"
+                            : label
                     }
                 case "function_call_output", "custom_tool_call_output":
                     if taskCurrentlyOpen() {
@@ -178,6 +180,21 @@ public final class RolloutParser {
 
     private static func lifecycleDate(_ value: Any?, fallback: Date?) -> Date? {
         doubleValue(value).map(Date.init(timeIntervalSince1970:)) ?? fallback
+    }
+
+    private static func requiresApproval(arguments value: Any?) -> Bool {
+        let arguments: [String: Any]?
+        if let value = value as? [String: Any] {
+            arguments = value
+        } else if let value = value as? String,
+                  let data = value.data(using: .utf8),
+                  let parsed = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            arguments = parsed
+        } else {
+            arguments = nil
+        }
+
+        return arguments?["sandbox_permissions"] as? String == "require_escalated"
     }
 
     private func parseSessionMetadata(from payload: [String: Any], rootTimestamp: Date?) -> SessionMetadata {
