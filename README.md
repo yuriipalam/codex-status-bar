@@ -56,7 +56,7 @@ Thanks to [m1ckc3s](https://github.com/m1ckc3s) and his [Claude Status Bar](http
 
 This is an unofficial open-source side project. It is not affiliated with, endorsed by, or sponsored by OpenAI.
 
-Codex and OpenAI are trademarks of OpenAI. The app includes Codex SVG icon assets for local menu-bar display. The MIT license covers this project's source code only and does not grant rights to OpenAI names, trademarks, or brand assets.
+Codex and OpenAI are trademarks of OpenAI. The app includes Codex icon assets for local menu-bar display. The MIT license covers this project's source code only and does not grant rights to OpenAI names, trademarks, or brand assets.
 
 ## License
 

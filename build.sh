@@ -23,7 +23,6 @@ TEAM_ID="${CODEX_STATUS_BAR_TEAM_ID:-${TEAM_ID:-}}"
 NOTARY_PROFILE="${NOTARY_PROFILE:-codexstatusbar}"
 SKIP_NOTARIZE="${CODEX_STATUS_BAR_SKIP_NOTARIZE:-${SKIP_NOTARIZE:-0}}"
 APP_ICON_NAME="CodexBarAppIcon"
-APP_ICON_SVG="$ROOT_DIR/Sources/CodexBar/Resources/$APP_ICON_NAME.svg"
 APP_ICON_PNG="$ROOT_DIR/Sources/CodexBar/Resources/$APP_ICON_NAME.png"
 APP_ICON_SOURCE="$ROOT_DIR/Sources/CodexBar/Resources/$APP_ICON_NAME.icns"
 ICONSET_DIR="$ROOT_DIR/.build/$APP_ICON_NAME.iconset"
@@ -80,21 +79,15 @@ trap cleanup EXIT
 mkdir -p "$OUTPUT_DIR" "$STAGING_DIR"
 
 render_app_icon() {
-  if [[ ! -f "$APP_ICON_SVG" ]]; then
-    echo "ERROR: missing app icon source: $APP_ICON_SVG" >&2
+  if [[ ! -f "$APP_ICON_PNG" ]]; then
+    echo "ERROR: missing app icon source: $APP_ICON_PNG" >&2
     exit 1
   fi
 
-  if [[ -f "$APP_ICON_PNG" && -f "$APP_ICON_SOURCE" \
-    && ! "$APP_ICON_SVG" -nt "$APP_ICON_PNG" \
-    && ! "$APP_ICON_SVG" -nt "$APP_ICON_SOURCE" ]]; then
+  if [[ -f "$APP_ICON_SOURCE" && ! "$APP_ICON_PNG" -nt "$APP_ICON_SOURCE" ]]; then
     return
   fi
 
-  if ! command -v rsvg-convert >/dev/null 2>&1; then
-    echo "ERROR: rsvg-convert is required to render $APP_ICON_SVG" >&2
-    exit 1
-  fi
   if ! command -v sips >/dev/null 2>&1; then
     echo "ERROR: sips is required to resize app icon assets." >&2
     exit 1
@@ -104,9 +97,7 @@ render_app_icon() {
     exit 1
   fi
 
-  echo "Rendering app icon from $APP_ICON_SVG"
-  rsvg-convert -w 1024 -h 1024 -f png "$APP_ICON_SVG" -o "$APP_ICON_PNG"
-
+  echo "Building app icon from $APP_ICON_PNG"
   rm -rf "$ICONSET_DIR"
   mkdir -p "$ICONSET_DIR"
   sips -z 16 16 "$APP_ICON_PNG" --out "$ICONSET_DIR/icon_16x16.png" >/dev/null
