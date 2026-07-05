@@ -3,19 +3,20 @@
 import PackageDescription
 
 let package = Package(
-    name: "CodexBar",
+    name: "CodexStatusBar",
     platforms: [
         .macOS(.v13)
     ],
     products: [
         .library(name: "CodexBarCore", targets: ["CodexBarCore"]),
-        .executable(name: "CodexBar", targets: ["CodexBar"]),
+        .executable(name: "CodexStatusBar", targets: ["CodexStatusBar"]),
     ],
     targets: [
         .target(name: "CodexBarCore"),
         .executableTarget(
-            name: "CodexBar",
+            name: "CodexStatusBar",
             dependencies: ["CodexBarCore"],
+            path: "Sources/CodexBar",
             exclude: ["Resources"],
             linkerSettings: [
                 .linkedFramework("AppKit")

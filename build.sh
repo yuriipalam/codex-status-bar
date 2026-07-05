@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
-# Builds CodexBar.app, and optionally a local DMG with: ./build.sh --dmg
+# Builds CodexStatusBar.app, and optionally a local DMG with: ./build.sh --dmg
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 
-APP_NAME="CodexBar"
-DISPLAY_NAME="Codex Bar"
+APP_NAME="CodexStatusBar"
+DISPLAY_NAME="Codex Status Bar"
 BUNDLE_NAME="$APP_NAME.app"
-VOLUME_NAME="Codex Bar"
+VOLUME_NAME="Codex Status Bar"
 CONFIGURATION="${CONFIGURATION:-release}"
 MAKE_DMG=0
 OUTPUT_DIR="$ROOT_DIR/build"
-STAGING_DIR="${CODEX_BAR_STAGING_DIR:-}"
+STAGING_DIR="${CODEX_STATUS_BAR_STAGING_DIR:-}"
 CLEAN_STAGING_DIR=0
 
-BUNDLE_ID="${BUNDLE_ID:-io.github.yuriipalam.codexbar}"
+BUNDLE_ID="${BUNDLE_ID:-io.github.yuriipalam.codexstatusbar}"
 APP_VERSION="${APP_VERSION:-0.1.0}"
 BUILD_NUMBER="${BUILD_NUMBER:-1}"
 MIN_SYSTEM_VERSION="${MIN_SYSTEM_VERSION:-13.0}"
-TEAM_ID="${CODEX_BAR_TEAM_ID:-${TEAM_ID:-}}"
-NOTARY_PROFILE="${NOTARY_PROFILE:-codexbar}"
-SKIP_NOTARIZE="${CODEX_BAR_SKIP_NOTARIZE:-${SKIP_NOTARIZE:-0}}"
+TEAM_ID="${CODEX_STATUS_BAR_TEAM_ID:-${TEAM_ID:-}}"
+NOTARY_PROFILE="${NOTARY_PROFILE:-codexstatusbar}"
+SKIP_NOTARIZE="${CODEX_STATUS_BAR_SKIP_NOTARIZE:-${SKIP_NOTARIZE:-0}}"
 APP_ICON_NAME="CodexBarAppIcon"
 APP_ICON_SVG="$ROOT_DIR/Sources/CodexBar/Resources/$APP_ICON_NAME.svg"
 APP_ICON_PNG="$ROOT_DIR/Sources/CodexBar/Resources/$APP_ICON_NAME.png"
@@ -32,9 +32,9 @@ usage() {
   echo "usage: $0 [--debug|--release] [--dmg]" >&2
   echo "" >&2
   echo "Environment overrides:" >&2
-  echo "  BUNDLE_ID=io.github.yuriipalam.codexbar" >&2
+  echo "  BUNDLE_ID=io.github.yuriipalam.codexstatusbar" >&2
   echo "  APP_VERSION=0.1.0 BUILD_NUMBER=1" >&2
-  echo "  CODEX_BAR_TEAM_ID=ABCDE12345 NOTARY_PROFILE=codexbar" >&2
+  echo "  CODEX_STATUS_BAR_TEAM_ID=ABCDE12345 NOTARY_PROFILE=codexstatusbar" >&2
   echo "  SKIP_NOTARIZE=1" >&2
 }
 
@@ -67,7 +67,7 @@ done
 if [[ -z "$STAGING_DIR" ]]; then
   TMP_BASE="${TMPDIR:-/tmp}"
   TMP_BASE="${TMP_BASE%/}"
-  STAGING_DIR="$(mktemp -d "$TMP_BASE/codexbar-build.XXXXXX")"
+  STAGING_DIR="$(mktemp -d "$TMP_BASE/codexstatusbar-build.XXXXXX")"
   CLEAN_STAGING_DIR=1
 fi
 

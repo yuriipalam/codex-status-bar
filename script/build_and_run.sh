@@ -2,12 +2,12 @@
 set -euo pipefail
 
 MODE="${1:-run}"
-APP_NAME="CodexBar"
-BUNDLE_ID="${BUNDLE_ID:-io.github.yuriipalam.codexbar}"
+APP_NAME="CodexStatusBar"
+BUNDLE_ID="${BUNDLE_ID:-io.github.yuriipalam.codexstatusbar}"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BUILT_APP_BUNDLE="$ROOT_DIR/build/CodexBar.app"
-RUN_ROOT="${CODEX_BAR_RUN_ROOT:-${TMPDIR:-/tmp}/codex-bar-run}"
-RUN_APP_BUNDLE="$RUN_ROOT/CodexBar.app"
+BUILT_APP_BUNDLE="$ROOT_DIR/build/$APP_NAME.app"
+RUN_ROOT="${CODEX_STATUS_BAR_RUN_ROOT:-${TMPDIR:-/tmp}/codex-status-bar-run}"
+RUN_APP_BUNDLE="$RUN_ROOT/$APP_NAME.app"
 APP_BUNDLE="$BUILT_APP_BUNDLE"
 APP_BINARY="$APP_BUNDLE/Contents/MacOS/$APP_NAME"
 

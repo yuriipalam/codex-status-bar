@@ -108,7 +108,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         if !status.isInstalled {
             showAlert(
                 message: "Codex is not installed",
-                informativeText: "Codex Bar needs Codex Desktop, the Codex CLI, or an IDE extension to read local activity.",
+                informativeText: "Codex Status Bar needs Codex Desktop, the Codex CLI, or an IDE extension to read local activity.",
                 buttons: ["OK"]
             )
             return
@@ -119,7 +119,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         if status.desktopAppURL != nil {
             let response = showAlert(
                 message: "Codex is not running",
-                informativeText: "Open Codex so Codex Bar can show live local activity. Recent local sessions may still appear.",
+                informativeText: "Open Codex so Codex Status Bar can show live local activity. Recent local sessions may still appear.",
                 buttons: ["Open Codex", "Not Now"]
             )
 
@@ -129,7 +129,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         } else {
             showAlert(
                 message: "Codex is not running",
-                informativeText: "Start Codex from your CLI or IDE so Codex Bar can show live local activity.",
+                informativeText: "Start Codex from your CLI or IDE so Codex Status Bar can show live local activity.",
                 buttons: ["OK"]
             )
         }
@@ -145,7 +145,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
 
         let response = showAlert(
             message: "Disable Codex's built-in menu bar icon?",
-            informativeText: "Codex Bar already shows Codex activity in the menu bar, so disabling Codex's own icon prevents duplicate menu bar items.",
+            informativeText: "Codex Status Bar already shows Codex activity in the menu bar, so disabling Codex's own icon prevents duplicate menu bar items.",
             buttons: ["Disable", "Not Now"]
         )
 
@@ -172,8 +172,8 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         let response = showAlert(
             message: isCodexDesktopRunning ? "Relaunch Codex now?" : "Open Codex now?",
             informativeText: isCodexDesktopRunning
-                ? "Codex Bar saved the setting. Relaunch Codex Desktop now to hide the duplicate menu bar icon, or do it later."
-                : "Codex Bar saved the setting. Open Codex Desktop now to use the new menu bar setting, or do it later.",
+                ? "Codex Status Bar saved the setting. Relaunch Codex Desktop now to hide the duplicate menu bar icon, or do it later."
+                : "Codex Status Bar saved the setting. Open Codex Desktop now to use the new menu bar setting, or do it later.",
             buttons: [isCodexDesktopRunning ? "Relaunch Now" : "Open Now", "Later"]
         )
 
@@ -201,7 +201,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         guard requestedTermination else {
             showAlert(
                 message: "Could not relaunch Codex",
-                informativeText: "Codex Bar could not ask Codex Desktop to quit. Quit and reopen Codex manually to apply the menu bar setting.",
+                informativeText: "Codex Status Bar could not ask Codex Desktop to quit. Quit and reopen Codex manually to apply the menu bar setting.",
                 buttons: ["OK"]
             )
             return
@@ -219,7 +219,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         guard Date() < deadline else {
             showAlert(
                 message: "Codex did not quit",
-                informativeText: "Codex Bar asked Codex Desktop to quit, but it is still running. Quit and reopen Codex manually to apply the menu bar setting.",
+                informativeText: "Codex Status Bar asked Codex Desktop to quit, but it is still running. Quit and reopen Codex manually to apply the menu bar setting.",
                 buttons: ["OK"]
             )
             return
@@ -430,7 +430,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         menu.addItem(.separator())
         menu.addItem(disabledItem(versionTitle()))
 
-        let quit = NSMenuItem(title: "Quit Codex Bar", action: #selector(quit), keyEquivalent: "q")
+        let quit = NSMenuItem(title: "Quit Codex Status Bar", action: #selector(quit), keyEquivalent: "q")
         quit.target = self
         menu.addItem(quit)
     }
