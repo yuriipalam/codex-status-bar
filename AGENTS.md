@@ -35,3 +35,53 @@ For launch or AppKit behavior changes, run:
 ```
 
 Generated build artifacts under `.build/`, `build/`, `dist/`, `.swiftpm/`, and `DerivedData/` should stay untracked.
+
+## Release Procedure
+
+Only the maintainer publishes releases. Release versions are controlled by the defaults in `build.sh`:
+
+```bash
+APP_VERSION="${APP_VERSION:-0.1.1}"
+BUILD_NUMBER="${BUILD_NUMBER:-2}"
+```
+
+Use a patch bump for fixes, docs, packaging, and icon updates; use a minor bump for user-visible features. Keep `BUILD_NUMBER` increasing for every public release.
+
+1. Pick the next version, for example `0.1.1`.
+2. Update `APP_VERSION` and `BUILD_NUMBER` in `build.sh`.
+3. Add or update the relevant `CHANGELOG.md` dated version section, for example `## 0.1.1 - 2026-07-05`.
+4. Run:
+
+```bash
+swift test
+./build.sh --dmg
+hdiutil verify build/CodexStatusBar.dmg
+```
+
+5. Commit the release prep:
+
+```bash
+git add build.sh CHANGELOG.md
+git commit -m "chore: release v0.1.1"
+git push origin main
+```
+
+6. Create and push an annotated tag:
+
+```bash
+git tag -a v0.1.1 -m "v0.1.1"
+git push origin v0.1.1
+```
+
+7. Create the GitHub Release and attach the DMG, using the changelog as the release notes:
+
+```bash
+gh release create v0.1.1 build/CodexStatusBar.dmg \
+  --repo yuriipalam/codex-status-bar \
+  --title "Codex Status Bar 0.1.1" \
+  --notes-file CHANGELOG.md
+```
+
+The uploaded asset must be named `CodexStatusBar.dmg` so the README download link resolves to the latest release.
+
+Changelog version sections use dates in `YYYY-MM-DD` format.

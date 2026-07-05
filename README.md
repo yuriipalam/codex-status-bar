@@ -46,7 +46,7 @@ Codex Status Bar reads local Codex activity files and processes them on your Mac
 
 The only optional write is user-approved: on first launch, Codex Status Bar can disable Codex Desktop's own duplicate menu bar icon by writing `[desktop] mac-menu-bar-enabled = false` to `$CODEX_HOME/config.toml`.
 
-Development, source builds, packaging, and release notes live in [CONTRIBUTING.MD](CONTRIBUTING.MD).
+Development, source builds, and packaging live in [CONTRIBUTING.MD](CONTRIBUTING.MD). Release notes live in [CHANGELOG.md](CHANGELOG.md).
 
 ## Acknowledgements
 
