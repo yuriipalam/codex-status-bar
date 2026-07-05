@@ -48,6 +48,10 @@ The only optional write is user-approved: on first launch, Codex Status Bar can 
 
 Development, source builds, packaging, and release notes live in [CONTRIBUTING.MD](CONTRIBUTING.MD).
 
+## Acknowledgements
+
+Thanks to [m1ckc3s](https://github.com/m1ckc3s) and his [Claude Status Bar](https://github.com/m1ckc3s/claude-status-bar) project. The original idea started there for Claude, this app is a Codex-focused take inspired by that work.
+
 ## Trademark / Not Affiliated
 
 This is an unofficial open-source side project. It is not affiliated with, endorsed by, or sponsored by OpenAI.
