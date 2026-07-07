@@ -10,7 +10,7 @@ A compact native macOS menu bar app that shows what Codex is doing locally.
 
 No window or dock icon. No network calls.
 
-<img width="784" height="720" alt="CodexStatusBar Demo" src="https://github.com/user-attachments/assets/727a2024-c4c9-4555-a923-e05bc9fbeeab" />
+<img width="720" height="720" alt="CodexStatusBarDemo" src="https://github.com/user-attachments/assets/1aa7932c-e4a5-4a78-9947-16268728cc87" />
 
 ## What It Shows
 
