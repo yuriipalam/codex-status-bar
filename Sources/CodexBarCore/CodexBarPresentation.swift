@@ -105,7 +105,7 @@ public enum CodexBarPresentation {
             return CodexBarDisplayState(title: title, animatesIcon: false, statusDot: .unread)
         }
 
-        return CodexBarDisplayState(title: usage.isEmpty ? "Codex" : usage, animatesIcon: false)
+        return CodexBarDisplayState(title: usage.isEmpty ? "Idle" : usage, animatesIcon: false)
     }
 
     private static func approvalPriorityAgent(from activeAgents: [ActiveAgent]) -> ActiveAgent? {

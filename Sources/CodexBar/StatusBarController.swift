@@ -404,38 +404,15 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         addSessionRows(to: menu)
 
         menu.addItem(.separator())
-        menu.addItem(disabledItem("Options"))
-
-        let timerItem = NSMenuItem(title: "Show timer", action: #selector(toggleTimer), keyEquivalent: "")
-        timerItem.target = self
-        timerItem.state = showTimer ? .on : .off
-        menu.addItem(timerItem)
-
-        let fiveHourItem = NSMenuItem(title: "Show 5-hour usage", action: #selector(toggleFiveHourUsage), keyEquivalent: "")
-        fiveHourItem.target = self
-        fiveHourItem.state = showFiveHourUsage ? .on : .off
-        menu.addItem(fiveHourItem)
-
-        let weeklyItem = NSMenuItem(title: "Show weekly usage", action: #selector(toggleWeeklyUsage), keyEquivalent: "")
-        weeklyItem.target = self
-        weeklyItem.state = showWeeklyUsage ? .on : .off
-        menu.addItem(weeklyItem)
+        addStatusRows(to: menu)
 
         menu.addItem(.separator())
+        addOptionsMenu(to: menu)
         addColorMenu(to: menu)
         addAnimationMenu(to: menu)
 
         menu.addItem(.separator())
-        addStatusRows(to: menu)
-
-        menu.addItem(.separator())
         menu.addItem(disabledItem(versionTitle()))
-
-        let startAtLoginItem = NSMenuItem(title: "Start at login", action: #selector(toggleStartAtLogin), keyEquivalent: "")
-        startAtLoginItem.target = self
-        startAtLoginItem.state = startAtLoginMenuState()
-        menu.addItem(startAtLoginItem)
-
         let quit = NSMenuItem(title: "Quit Codex Status Bar", action: #selector(quit), keyEquivalent: "q")
         quit.target = self
         menu.addItem(quit)
@@ -532,8 +509,36 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         }
     }
 
+    private func addOptionsMenu(to menu: NSMenu) {
+        let item = NSMenuItem(title: CodexBarMenuLayout.optionsTitle, action: nil, keyEquivalent: "")
+        let submenu = NSMenu()
+
+        let timerItem = NSMenuItem(title: CodexBarMenuLayout.showTimerTitle, action: #selector(toggleTimer), keyEquivalent: "")
+        timerItem.target = self
+        timerItem.state = showTimer ? .on : .off
+        submenu.addItem(timerItem)
+
+        let fiveHourItem = NSMenuItem(title: CodexBarMenuLayout.showFiveHourUsageTitle, action: #selector(toggleFiveHourUsage), keyEquivalent: "")
+        fiveHourItem.target = self
+        fiveHourItem.state = showFiveHourUsage ? .on : .off
+        submenu.addItem(fiveHourItem)
+
+        let weeklyItem = NSMenuItem(title: CodexBarMenuLayout.showWeeklyUsageTitle, action: #selector(toggleWeeklyUsage), keyEquivalent: "")
+        weeklyItem.target = self
+        weeklyItem.state = showWeeklyUsage ? .on : .off
+        submenu.addItem(weeklyItem)
+
+        let startAtLoginItem = NSMenuItem(title: CodexBarMenuLayout.startAtLoginTitle, action: #selector(toggleStartAtLogin), keyEquivalent: "")
+        startAtLoginItem.target = self
+        startAtLoginItem.state = startAtLoginMenuState()
+        submenu.addItem(startAtLoginItem)
+
+        item.submenu = submenu
+        menu.addItem(item)
+    }
+
     private func addColorMenu(to menu: NSMenu) {
-        let item = NSMenuItem(title: "Color", action: nil, keyEquivalent: "")
+        let item = NSMenuItem(title: CodexBarMenuLayout.colorTitle, action: nil, keyEquivalent: "")
         let submenu = NSMenu()
 
         for mode in StatusIconColorMode.allCases {
@@ -549,7 +554,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
     }
 
     private func addAnimationMenu(to menu: NSMenu) {
-        let item = NSMenuItem(title: "Animation", action: nil, keyEquivalent: "")
+        let item = NSMenuItem(title: CodexBarMenuLayout.animationTitle, action: nil, keyEquivalent: "")
         let submenu = NSMenu()
 
         for mode in StatusIconAnimationMode.allCases {
@@ -983,7 +988,7 @@ private final class SessionMenuItemView: NSView {
         titleLabel.textColor = primaryColor
         timeLabel.textColor = secondaryColor
         chevronView.contentTintColor = secondaryColor
-        badgeView.highlighted = highlighted
+        badgeView.rowHighlighted = highlighted
     }
 
     private func updateElapsedTime(now: Date) {
@@ -1044,28 +1049,21 @@ private final class StatusDotView: NSView {
     }
 }
 
-private final class BadgeView: NSView {
-    private static let height: CGFloat = 16
-    private static let horizontalPadding: CGFloat = 6
-
+private final class BadgeView: NSButton {
     private var text: String?
-    private let font = NSFont.systemFont(ofSize: 9, weight: .semibold)
-    private let label = NSTextField(labelWithString: "")
+    private let badgeFont = NSFont.systemFont(ofSize: 10, weight: .semibold)
 
-    var highlighted = false {
+    var rowHighlighted = false {
         didSet {
-            updateColors()
-            needsDisplay = true
+            updateTitleColor()
         }
     }
 
     init(text: String?) {
-        self.text = text
+        self.text = nil
         super.init(frame: .zero)
         setupLayout()
-        updateColors()
-        isHidden = text == nil
-        label.stringValue = text ?? ""
+        update(text: text)
     }
 
     func update(text: String?) {
@@ -1073,9 +1071,9 @@ private final class BadgeView: NSView {
 
         self.text = text
         isHidden = text == nil
-        label.stringValue = text ?? ""
+        title = text ?? ""
+        updateTitleColor()
         invalidateIntrinsicContentSize()
-        needsDisplay = true
     }
 
     @available(*, unavailable)
@@ -1086,41 +1084,32 @@ private final class BadgeView: NSView {
     override var intrinsicContentSize: NSSize {
         guard text != nil else { return .zero }
 
-        let width = label.intrinsicContentSize.width + (Self.horizontalPadding * 2)
-        return NSSize(width: max(30, ceil(width)), height: Self.height)
+        let size = super.intrinsicContentSize
+        return NSSize(width: max(30, ceil(size.width)), height: ceil(size.height))
     }
 
-    override func draw(_ dirtyRect: NSRect) {
-        guard text != nil else { return }
-
-        let fill = highlighted
-            ? NSColor.selectedMenuItemTextColor.withAlphaComponent(0.16)
-            : NSColor.tertiaryLabelColor.withAlphaComponent(0.18)
-        fill.setFill()
-
-        let rect = bounds.insetBy(dx: 0, dy: 1)
-        NSBezierPath(roundedRect: rect, xRadius: 7, yRadius: 7).fill()
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        nil
     }
 
     private func setupLayout() {
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = font
-        label.alignment = .center
-        label.lineBreakMode = .byClipping
-        label.maximumNumberOfLines = 1
-        label.usesSingleLineMode = true
-        label.cell?.wraps = false
-        label.cell?.isScrollable = false
-        label.cell?.lineBreakMode = .byClipping
-        addSubview(label)
-
-        NSLayoutConstraint.activate([
-            label.centerXAnchor.constraint(equalTo: centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: centerYAnchor),
-        ])
+        bezelStyle = .badge
+        controlSize = .small
+        font = badgeFont
+        imagePosition = .noImage
+        alignment = .center
+        isBordered = true
+        isTransparent = false
+        focusRingType = .none
+        refusesFirstResponder = true
+        setButtonType(.momentaryChange)
     }
 
-    private func updateColors() {
-        label.textColor = highlighted ? NSColor.selectedMenuItemTextColor : NSColor.secondaryLabelColor
+    private func updateTitleColor() {
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: badgeFont,
+            .foregroundColor: rowHighlighted ? NSColor.selectedMenuItemTextColor : NSColor.secondaryLabelColor,
+        ]
+        attributedTitle = NSAttributedString(string: title, attributes: attributes)
     }
 }

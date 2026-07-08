@@ -24,7 +24,7 @@ struct CodexBarPresentationTests {
     }
 
     @Test
-    func idleDisplayFallsBackToCodexWhenUsageWindowsAreHidden() {
+    func idleDisplayFallsBackToIdleWhenUsageWindowsAreHidden() {
         let snapshot = CodexSnapshot.empty(now: date("2026-06-24T20:00:00.000Z"))
 
         let state = CodexBarPresentation.displayState(
@@ -33,7 +33,7 @@ struct CodexBarPresentationTests {
             now: snapshot.generatedAt
         )
 
-        #expect(state.title == "Codex")
+        #expect(state.title == "Idle")
         #expect(state.animatesIcon == false)
     }
 

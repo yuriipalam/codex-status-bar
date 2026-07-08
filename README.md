@@ -15,7 +15,7 @@ No window or dock icon. No network calls.
 - **Unread sessions** - a blue-dot status for unread finished Codex sessions, and local usage indicators.
 - **Idle / done** - local usage indicators.
 
-The menu includes active and unread sessions, `APP` / `CLI` / `IDE` badges, timer and usage toggles, icon color and animation options, usage reset details, Start at login, and the app version.
+The menu includes active and unread sessions, `APP` / `CLI` / `IDE` badges, usage reset details, an Options submenu for toggles, color and animation controls, and the app version.
 
 ## Requirements
 

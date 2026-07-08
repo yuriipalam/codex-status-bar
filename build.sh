@@ -210,6 +210,13 @@ strip_forbidden_root_xattrs() {
   done
 }
 
+root_forbidden_xattrs_present() {
+  local target="$1"
+
+  xattr -p com.apple.FinderInfo "$target" >/dev/null 2>&1 \
+    || xattr -p "com.apple.fileprovider.fpfs#P" "$target" >/dev/null 2>&1
+}
+
 verify_clean_app_bundle() {
   local target="$1"
 
@@ -217,7 +224,11 @@ verify_clean_app_bundle() {
     clean_signing_detritus "$target"
     strip_forbidden_root_xattrs "$target"
 
-    if codesign --verify --deep --strict --verbose=2 "$target"; then
+    sleep 0.5
+    strip_forbidden_root_xattrs "$target"
+
+    if ! root_forbidden_xattrs_present "$target" \
+      && codesign --verify --deep --strict --verbose=2 "$target"; then
       return
     fi
 

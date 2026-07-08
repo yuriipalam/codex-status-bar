@@ -12,6 +12,9 @@ All notable changes to Codex Status Bar are documented here.
 ### Changed
 
 - Added DMG Gatekeeper unblock instructions for non-notarized downloads.
+- Grouped display toggles under an Options submenu, with Color and Animation as top-level menu controls.
+- Show Idle when both usage windows are hidden and there is no active or unread Codex activity.
+- Use a native AppKit badge control for session client badges so APP, CLI, and IDE labels align consistently.
 
 ## 0.1.1 - 2026-07-05
 
