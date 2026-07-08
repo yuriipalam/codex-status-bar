@@ -9,6 +9,7 @@ class CodexStatusBar < Formula
   depends_on macos: :ventura
 
   def install
+    ENV["SWIFT_BUILD_FLAGS"] = "--disable-sandbox"
     system "./build.sh", "--release"
     prefix.install "build/CodexStatusBar.app"
 

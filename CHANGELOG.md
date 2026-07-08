@@ -12,6 +12,8 @@ All notable changes to Codex Status Bar are documented here.
 ### Changed
 
 - Added DMG Gatekeeper unblock instructions for non-notarized downloads.
+- Added the Homebrew trust step required for the current custom tap.
+- Disabled SwiftPM's nested sandbox during Homebrew formula builds.
 - Grouped display toggles under an Options submenu, with Color and Animation as top-level menu controls.
 - Show Idle when both usage windows are hidden and there is no active or unread Codex activity.
 - Use a native AppKit badge control for session client badges so APP, CLI, and IDE labels align consistently.

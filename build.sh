@@ -22,10 +22,21 @@ MIN_SYSTEM_VERSION="${MIN_SYSTEM_VERSION:-13.0}"
 TEAM_ID="${CODEX_STATUS_BAR_TEAM_ID:-${TEAM_ID:-}}"
 NOTARY_PROFILE="${NOTARY_PROFILE:-codexstatusbar}"
 SKIP_NOTARIZE="${CODEX_STATUS_BAR_SKIP_NOTARIZE:-${SKIP_NOTARIZE:-0}}"
+SWIFT_BUILD_FLAGS="${SWIFT_BUILD_FLAGS:-}"
 APP_ICON_NAME="CodexBarAppIcon"
 APP_ICON_PNG="$ROOT_DIR/Sources/CodexBar/Resources/$APP_ICON_NAME.png"
 APP_ICON_SOURCE="$ROOT_DIR/Sources/CodexBar/Resources/$APP_ICON_NAME.icns"
 ICONSET_DIR="$ROOT_DIR/.build/$APP_ICON_NAME.iconset"
+
+swift_build() {
+  if [[ -n "$SWIFT_BUILD_FLAGS" ]]; then
+    local extra_args
+    read -r -a extra_args <<<"$SWIFT_BUILD_FLAGS"
+    swift build "$@" "${extra_args[@]}"
+  else
+    swift build "$@"
+  fi
+}
 
 usage() {
   echo "usage: $0 [--debug|--release] [--dmg]" >&2
@@ -35,6 +46,7 @@ usage() {
   echo "  APP_VERSION=$APP_VERSION BUILD_NUMBER=$BUILD_NUMBER" >&2
   echo "  CODEX_STATUS_BAR_TEAM_ID=ABCDE12345 NOTARY_PROFILE=codexstatusbar" >&2
   echo "  SKIP_NOTARIZE=1" >&2
+  echo "  SWIFT_BUILD_FLAGS=\"--disable-sandbox\"" >&2
 }
 
 while [[ $# -gt 0 ]]; do
@@ -114,11 +126,11 @@ render_app_icon() {
 }
 
 if [[ "$CONFIGURATION" == "release" ]]; then
-  swift build -c release
-  BUILD_BIN_DIR="$(swift build -c release --show-bin-path)"
+  swift_build -c release
+  BUILD_BIN_DIR="$(swift_build -c release --show-bin-path)"
 else
-  swift build
-  BUILD_BIN_DIR="$(swift build --show-bin-path)"
+  swift_build
+  BUILD_BIN_DIR="$(swift_build --show-bin-path)"
 fi
 
 BUILD_BINARY="$BUILD_BIN_DIR/$APP_NAME"

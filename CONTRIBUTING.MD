@@ -72,6 +72,7 @@ After the formula is pushed to the tap, validate the published install path:
 
 ```bash
 brew tap yuriipalam/codex-status-bar https://github.com/yuriipalam/codex-status-bar
+brew trust --formula yuriipalam/codex-status-bar/codex-status-bar
 brew audit --formula yuriipalam/codex-status-bar/codex-status-bar
 brew install codex-status-bar
 codex-status-bar

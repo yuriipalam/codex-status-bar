@@ -30,6 +30,7 @@ Recommended for developers. Homebrew builds Codex Status Bar from source and lau
 
 ```bash
 brew tap yuriipalam/codex-status-bar https://github.com/yuriipalam/codex-status-bar
+brew trust --formula yuriipalam/codex-status-bar/codex-status-bar
 brew install codex-status-bar
 codex-status-bar
 ```
