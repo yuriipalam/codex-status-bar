@@ -38,17 +38,19 @@ Generated build artifacts under `.build/`, `build/`, `dist/`, `.swiftpm/`, and `
 
 ## Release Procedure
 
-Only the maintainer publishes releases. Release versions are controlled by the defaults in `build.sh`:
+Only the maintainer publishes releases. App bundle versions are controlled by `VERSION` and `BUILD_NUMBER`:
 
-```bash
-APP_VERSION="${APP_VERSION:-0.1.1}"
-BUILD_NUMBER="${BUILD_NUMBER:-2}"
+```text
+VERSION
+BUILD_NUMBER
 ```
+
+Homebrew also requires a literal package metadata version in `Formula/codex-status-bar.rb`; keep it in sync with `VERSION` during release prep.
 
 Use a patch bump for fixes, docs, packaging, and icon updates; use a minor bump for user-visible features. Keep `BUILD_NUMBER` increasing for every public release.
 
 1. Pick the next version, for example `0.1.1`.
-2. Update `APP_VERSION` and `BUILD_NUMBER` in `build.sh`.
+2. Update `VERSION`, `BUILD_NUMBER`, and the `version` field in `Formula/codex-status-bar.rb`.
 3. Add or update the relevant `CHANGELOG.md` dated version section, for example `## 0.1.1 - 2026-07-05`.
 4. Run:
 
@@ -61,7 +63,8 @@ hdiutil verify build/CodexStatusBar.dmg
 5. Commit the release prep:
 
 ```bash
-git add build.sh CHANGELOG.md
+git add VERSION BUILD_NUMBER CHANGELOG.md
+git add Formula/codex-status-bar.rb
 git commit -m "chore: release v0.1.1"
 git push origin main
 ```

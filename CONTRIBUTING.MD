@@ -54,6 +54,29 @@ The DMG is written to:
 build/CodexStatusBar.dmg
 ```
 
+## Homebrew
+
+The formula lives in:
+
+```text
+Formula/codex-status-bar.rb
+```
+
+Check Ruby syntax locally:
+
+```bash
+ruby -c Formula/codex-status-bar.rb
+```
+
+After the formula is pushed to the tap, validate the published install path:
+
+```bash
+brew tap yuriipalam/codex-status-bar https://github.com/yuriipalam/codex-status-bar
+brew audit --formula yuriipalam/codex-status-bar/codex-status-bar
+brew install codex-status-bar
+codex-status-bar
+```
+
 ## Commit Messages
 
 Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages:

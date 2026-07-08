@@ -2,6 +2,17 @@
 
 All notable changes to Codex Status Bar are documented here.
 
+## 0.2.0 - 2026-07-08
+
+### Added
+
+- Homebrew formula installation that builds Codex Status Bar from source.
+- Start at login menu item.
+
+### Changed
+
+- Added DMG Gatekeeper unblock instructions for non-notarized downloads.
+
 ## 0.1.1 - 2026-07-05
 
 ### Added

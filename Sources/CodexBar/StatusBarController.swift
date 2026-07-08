@@ -1,5 +1,6 @@
 import AppKit
 import CodexBarCore
+import ServiceManagement
 
 final class StatusBarController: NSObject, NSMenuDelegate {
     private enum DefaultsKey {
@@ -430,6 +431,11 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         menu.addItem(.separator())
         menu.addItem(disabledItem(versionTitle()))
 
+        let startAtLoginItem = NSMenuItem(title: "Start at login", action: #selector(toggleStartAtLogin), keyEquivalent: "")
+        startAtLoginItem.target = self
+        startAtLoginItem.state = startAtLoginMenuState()
+        menu.addItem(startAtLoginItem)
+
         let quit = NSMenuItem(title: "Quit Codex Status Bar", action: #selector(quit), keyEquivalent: "q")
         quit.target = self
         menu.addItem(quit)
@@ -579,8 +585,21 @@ final class StatusBarController: NSObject, NSMenuDelegate {
     }
 
     private func versionTitle() -> String {
-        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.1.0"
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "unknown"
         return "Version \(version)"
+    }
+
+    private func startAtLoginMenuState() -> NSControl.StateValue {
+        switch SMAppService.mainApp.status {
+        case .enabled:
+            return .on
+        case .requiresApproval:
+            return .mixed
+        case .notRegistered, .notFound:
+            return .off
+        @unknown default:
+            return .off
+        }
     }
 
     @objc private func openCodex() {
@@ -646,6 +665,31 @@ final class StatusBarController: NSObject, NSMenuDelegate {
 
         iconAnimationMode = mode
         render()
+    }
+
+    @objc private func toggleStartAtLogin() {
+        do {
+            switch SMAppService.mainApp.status {
+            case .enabled:
+                try SMAppService.mainApp.unregister()
+            case .notRegistered, .notFound:
+                try SMAppService.mainApp.register()
+            case .requiresApproval:
+                showAlert(
+                    message: "Approve Start at login in System Settings",
+                    informativeText: "Open System Settings > General > Login Items & Extensions, then allow Codex Status Bar.",
+                    buttons: ["OK"]
+                )
+            @unknown default:
+                try SMAppService.mainApp.register()
+            }
+        } catch {
+            showAlert(
+                message: "Could not update Start at login",
+                informativeText: error.localizedDescription,
+                buttons: ["OK"]
+            )
+        }
     }
 
     @objc private func quit() {

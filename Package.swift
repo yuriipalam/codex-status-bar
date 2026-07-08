@@ -19,7 +19,8 @@ let package = Package(
             path: "Sources/CodexBar",
             exclude: ["Resources"],
             linkerSettings: [
-                .linkedFramework("AppKit")
+                .linkedFramework("AppKit"),
+                .linkedFramework("ServiceManagement")
             ]
         ),
         .testTarget(

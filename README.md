@@ -2,12 +2,6 @@
 
 A compact native macOS menu bar app that shows what Codex is doing locally.
 
-<p>
-  <a href="https://github.com/yuriipalam/codex-status-bar/releases/latest/download/CodexStatusBar.dmg">
-    <img alt="Download for Mac OS" src="https://img.shields.io/static/v1?label=&message=Download%20for%20Mac%20OS&color=000000&style=for-the-badge&logo=apple&logoColor=white">
-  </a>
-</p>
-
 No window or dock icon. No network calls.
 
 <img width="720" height="720" alt="CodexStatusBarDemo" src="https://github.com/user-attachments/assets/1aa7932c-e4a5-4a78-9947-16268728cc87" />
@@ -21,7 +15,7 @@ No window or dock icon. No network calls.
 - **Unread sessions** - a blue-dot status for unread finished Codex sessions, and local usage indicators.
 - **Idle / done** - local usage indicators.
 
-The menu includes active and unread sessions, `APP` / `CLI` / `IDE` badges, timer and usage toggles, icon color and animation options, usage reset details, and the app version.
+The menu includes active and unread sessions, `APP` / `CLI` / `IDE` badges, timer and usage toggles, icon color and animation options, usage reset details, Start at login, and the app version.
 
 ## Requirements
 
@@ -30,9 +24,34 @@ The menu includes active and unread sessions, `APP` / `CLI` / `IDE` badges, time
 
 ## Install
 
-Download the latest DMG, open it, then drag Codex Status Bar into `Applications`.
+### Homebrew
 
-Open Codex Status Bar from `Applications`. If macOS blocks the first launch because the app is not notarized, right-click the app and choose `Open`, then confirm.
+Recommended for developers. Homebrew builds Codex Status Bar from source and launches the app from Homebrew's install location.
+
+```bash
+brew tap yuriipalam/codex-status-bar https://github.com/yuriipalam/codex-status-bar
+brew install codex-status-bar
+codex-status-bar
+```
+
+### DMG
+
+<p>
+  <a href="https://github.com/yuriipalam/codex-status-bar/releases/latest/download/CodexStatusBar.dmg">
+    <img alt="Download for Mac OS" src="https://img.shields.io/static/v1?label=&message=Download%20for%20Mac%20OS&color=000000&style=for-the-badge&logo=apple&logoColor=white">
+  </a>
+</p>
+
+Download the latest DMG, open it, then drag `CodexStatusBar.app` into `Applications`.
+
+The DMG is not Developer ID signed or notarized yet. If macOS blocks the first launch, keep the app and remove the downloaded-app quarantine:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/CodexStatusBar.app
+open /Applications/CodexStatusBar.app
+```
+
+You can also use Apple's UI override: try opening the app once, then open System Settings > Privacy & Security and click `Open Anyway`. Apple documents that flow in [Safely open apps on your Mac](https://support.apple.com/en-us/102445).
 
 ## How It Works
 

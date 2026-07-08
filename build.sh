@@ -16,8 +16,8 @@ STAGING_DIR="${CODEX_STATUS_BAR_STAGING_DIR:-}"
 CLEAN_STAGING_DIR=0
 
 BUNDLE_ID="${BUNDLE_ID:-io.github.yuriipalam.codexstatusbar}"
-APP_VERSION="${APP_VERSION:-0.1.1}"
-BUILD_NUMBER="${BUILD_NUMBER:-2}"
+APP_VERSION="${APP_VERSION:-$(<"$ROOT_DIR/VERSION")}"
+BUILD_NUMBER="${BUILD_NUMBER:-$(<"$ROOT_DIR/BUILD_NUMBER")}"
 MIN_SYSTEM_VERSION="${MIN_SYSTEM_VERSION:-13.0}"
 TEAM_ID="${CODEX_STATUS_BAR_TEAM_ID:-${TEAM_ID:-}}"
 NOTARY_PROFILE="${NOTARY_PROFILE:-codexstatusbar}"
@@ -32,7 +32,7 @@ usage() {
   echo "" >&2
   echo "Environment overrides:" >&2
   echo "  BUNDLE_ID=io.github.yuriipalam.codexstatusbar" >&2
-  echo "  APP_VERSION=0.1.0 BUILD_NUMBER=1" >&2
+  echo "  APP_VERSION=$APP_VERSION BUILD_NUMBER=$BUILD_NUMBER" >&2
   echo "  CODEX_STATUS_BAR_TEAM_ID=ABCDE12345 NOTARY_PROFILE=codexstatusbar" >&2
   echo "  SKIP_NOTARIZE=1" >&2
 }
@@ -210,6 +210,27 @@ strip_forbidden_root_xattrs() {
   done
 }
 
+verify_clean_app_bundle() {
+  local target="$1"
+
+  for attempt in 1 2 3 4 5; do
+    clean_signing_detritus "$target"
+    strip_forbidden_root_xattrs "$target"
+
+    if codesign --verify --deep --strict --verbose=2 "$target"; then
+      return
+    fi
+
+    if [[ "$attempt" != "5" ]]; then
+      echo "Retrying app verification after clearing bundle metadata."
+      sleep 0.25
+    fi
+  done
+
+  echo "ERROR: app verification failed after clearing bundle metadata: $target" >&2
+  exit 1
+}
+
 find_developer_id() {
   local identities
   identities="$(security find-identity -v -p codesigning 2>/dev/null || true)"
@@ -318,8 +339,7 @@ notarize_app_if_possible() {
 publish_app_bundle() {
   rm -rf "$PUBLIC_APP_BUNDLE"
   ditto --noextattr --noacl --noqtn "$APP_BUNDLE" "$PUBLIC_APP_BUNDLE"
-  clean_signing_detritus "$PUBLIC_APP_BUNDLE"
-  strip_forbidden_root_xattrs "$PUBLIC_APP_BUNDLE"
+  verify_clean_app_bundle "$PUBLIC_APP_BUNDLE"
   echo "Built $PUBLIC_APP_BUNDLE"
 }
 
@@ -433,6 +453,8 @@ OSA
   else
     echo "DMG is not Developer ID signed or notarized; Gatekeeper warnings are expected on downloaded copies."
   fi
+
+  verify_clean_app_bundle "$PUBLIC_APP_BUNDLE"
 
   echo "Built $dmg"
 }
