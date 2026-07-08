@@ -11,6 +11,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         static let iconAnimationMode = "iconAnimationMode"
         static let didShowCodexAvailabilityCheck = "didShowCodexAvailabilityCheck"
         static let didOfferDisableCodexMenuBarIcon = "didOfferDisableCodexMenuBarIcon"
+        static let didRegisterStartAtLoginByDefault = "didRegisterStartAtLoginByDefault"
     }
 
     private enum MenuLayout {
@@ -97,12 +98,39 @@ final class StatusBarController: NSObject, NSMenuDelegate {
     private func runFirstLaunchChecks() {
         let status = CodexInstallDetector.detect()
 
+        registerStartAtLoginByDefaultIfNeeded()
+
         if !UserDefaults.standard.bool(forKey: DefaultsKey.didShowCodexAvailabilityCheck, defaultValue: false) {
             UserDefaults.standard.set(true, forKey: DefaultsKey.didShowCodexAvailabilityCheck)
             showCodexAvailabilityAlertIfNeeded(status)
         }
 
         offerDisableCodexMenuBarIconIfNeeded(status)
+    }
+
+    private func registerStartAtLoginByDefaultIfNeeded() {
+        guard !UserDefaults.standard.bool(forKey: DefaultsKey.didRegisterStartAtLoginByDefault, defaultValue: false) else {
+            return
+        }
+
+        UserDefaults.standard.set(true, forKey: DefaultsKey.didRegisterStartAtLoginByDefault)
+
+        do {
+            switch SMAppService.mainApp.status {
+            case .notRegistered, .notFound:
+                try SMAppService.mainApp.register()
+            case .enabled, .requiresApproval:
+                return
+            @unknown default:
+                return
+            }
+        } catch {
+            showAlert(
+                message: "Could not enable Start at login",
+                informativeText: error.localizedDescription,
+                buttons: ["OK"]
+            )
+        }
     }
 
     private func showCodexAvailabilityAlertIfNeeded(_ status: CodexInstallStatus) {

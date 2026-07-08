@@ -35,6 +35,13 @@ brew install codex-status-bar
 codex-status-bar
 ```
 
+To update this canary install:
+
+```bash
+brew update
+brew reinstall codex-status-bar
+```
+
 ### DMG
 
 <p>
@@ -54,6 +61,27 @@ open /Applications/CodexStatusBar.app
 
 You can also use Apple's UI override: try opening the app once, then open System Settings > Privacy & Security and click `Open Anyway`. Apple documents that flow in [Safely open apps on your Mac](https://support.apple.com/en-us/102445).
 
+### Uninstall
+
+Turn off `Options` > `Start at login` before uninstalling.
+
+For Homebrew:
+
+```bash
+brew uninstall codex-status-bar
+```
+
+For DMG installs, remove `/Applications/CodexStatusBar.app`.
+
+Removing the app does not remove saved display options. To remove local Codex Status Bar settings too:
+
+```bash
+defaults delete io.github.yuriipalam.codexstatusbar 2>/dev/null || true
+rm -f ~/Library/Preferences/io.github.yuriipalam.codexstatusbar.plist
+```
+
+If the app was removed before Start at login was turned off, remove the stale item from System Settings > General > Login Items & Extensions.
+
 ## How It Works
 
 Codex Status Bar resolves `CODEX_HOME`, falls back to `~/.codex`, and polls local Codex session JSONL plus Codex's unread-thread state every 0.2 seconds. It derives status, elapsed time, tool labels, unread sessions, and usage snapshots from local files only.
@@ -64,7 +92,7 @@ Those Codex files are implementation details, not a stable public API. If Codex 
 
 Codex Status Bar reads local Codex activity files and processes them on your Mac. It does not display prompts, responses, command output, or generated thread summaries, and it does not upload telemetry, call OpenAI APIs, install hooks, or modify session logs.
 
-The only optional write is user-approved: on first launch, Codex Status Bar can disable Codex Desktop's own duplicate menu bar icon by writing `[desktop] mac-menu-bar-enabled = false` to `$CODEX_HOME/config.toml`.
+Codex Status Bar stores local display options in macOS preferences and registers itself as a login item on first launch; you can turn Start at login off from `Options`. The only write to Codex config is user-approved: on first launch, Codex Status Bar can disable Codex Desktop's own duplicate menu bar icon by writing `[desktop] mac-menu-bar-enabled = false` to `$CODEX_HOME/config.toml`.
 
 Development, source builds, and packaging live in [CONTRIBUTING.MD](CONTRIBUTING.MD). Release notes live in [CHANGELOG.md](CHANGELOG.md).
 
