@@ -2,6 +2,19 @@
 
 All notable changes to Codex Status Bar are documented here.
 
+## 0.3.0 - 2026-07-14
+
+### Added
+
+- Compact status support for newer local Codex activity, including reasoning, image generation, context compaction, settings changes, and rollbacks.
+
+### Changed
+
+- Classify 5-hour and weekly usage windows by their reported duration instead of assuming fixed primary and secondary positions.
+- Correctly display weekly-only limits when Codex reports the weekly window as primary and omits the 5-hour window.
+- Show `--` instead of `unavailable` for missing usage percentages, reset times, and snapshots.
+- Keep unknown incoming activity types ignored so they do not overwrite the last recognized status.
+
 ## 0.2.0 - 2026-07-08
 
 ### Added
