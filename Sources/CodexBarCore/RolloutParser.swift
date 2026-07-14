@@ -62,6 +62,10 @@ public final class RolloutParser {
                 } else if let id = parsedMetadata.id?.nilIfEmpty, id != metadata?.id {
                     importedSessionIDs.insert(id)
                 }
+            } else if type == "compacted" {
+                if taskCurrentlyOpen() {
+                    latestStatusLabel = "Compacting context"
+                }
             } else if type == "event_msg" {
                 let payloadType = payload["type"] as? String
                 switch payloadType {
@@ -92,10 +96,28 @@ public final class RolloutParser {
                     if taskCurrentlyOpen() {
                         latestStatusLabel = "Compacting context"
                     }
+                case "agent_reasoning":
+                    if taskCurrentlyOpen() {
+                        latestStatusLabel = "Reasoning"
+                    }
                 case "thread_goal_updated":
                     if taskCurrentlyOpen() {
                         latestToolLabel = "Updating goal"
                         latestStatusLabel = "Updating goal"
+                    }
+                case "thread_settings_applied":
+                    if taskCurrentlyOpen() {
+                        latestToolLabel = "Applying settings"
+                        latestStatusLabel = "Applying settings"
+                    }
+                case "thread_rolled_back":
+                    if taskCurrentlyOpen() {
+                        latestToolLabel = "Rolling back"
+                        latestStatusLabel = "Rolling back"
+                    }
+                case "image_generation_end":
+                    if taskCurrentlyOpen() {
+                        latestStatusLabel = StatusLabelMapper.reviewLabel(after: "Creating image")
                     }
                 case "patch_apply_end":
                     if taskCurrentlyOpen() {
@@ -143,6 +165,11 @@ public final class RolloutParser {
                 case "function_call_output", "custom_tool_call_output":
                     if taskCurrentlyOpen() {
                         latestStatusLabel = StatusLabelMapper.reviewLabel(after: latestToolLabel)
+                    }
+                case "image_generation_call":
+                    if taskCurrentlyOpen() {
+                        latestToolLabel = "Creating image"
+                        latestStatusLabel = "Creating image"
                     }
                 case "web_search_call":
                     if taskCurrentlyOpen() {
@@ -217,11 +244,32 @@ public final class RolloutParser {
             return nil
         }
 
-        let primary = (rateLimits["primary"] as? [String: Any]).flatMap {
-            parseWindow($0, label: "5h")
-        }
-        let secondary = (rateLimits["secondary"] as? [String: Any]).flatMap {
-            parseWindow($0, label: "week")
+        var primary: UsageWindow?
+        var secondary: UsageWindow?
+        let windowPayloads: [([String: Any]?, String)] = [
+            (rateLimits["primary"] as? [String: Any], "5h"),
+            (rateLimits["secondary"] as? [String: Any], "week"),
+        ]
+
+        for (value, fallbackLabel) in windowPayloads {
+            guard let value else { continue }
+            let windowMinutes = intValue(value["window_minutes"] ?? value["windowDurationMins"])
+            let label: String
+            switch windowMinutes {
+            case 300:
+                label = "5h"
+            case 10_080:
+                label = "week"
+            default:
+                label = fallbackLabel
+            }
+
+            guard let window = parseWindow(value, label: label) else { continue }
+            if label == "week" {
+                secondary = window
+            } else {
+                primary = window
+            }
         }
 
         guard primary != nil || secondary != nil else {

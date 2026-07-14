@@ -25,21 +25,21 @@ public enum UsageFormatter {
 
     public static func leftLine(_ window: UsageWindow?, fallbackLabel: String) -> String {
         guard let window else {
-            return "\(fallbackLabel) left: unavailable"
+            return "\(fallbackLabel) left: --"
         }
         return "\(fallbackLabel) left: \(percent(window.leftPercent))"
     }
 
     public static func resetLine(_ window: UsageWindow?, fallbackLabel: String, now: Date) -> String {
         guard let reset = window?.resetsAt else {
-            return "\(fallbackLabel) reset: unavailable"
+            return "\(fallbackLabel) reset: --"
         }
         return "\(fallbackLabel) reset: \(relativeTime(from: now, to: reset))"
     }
 
     public static func snapshotLine(_ usage: UsageSnapshot?, now: Date) -> String {
         guard let usage else {
-            return "Snapshot: unavailable"
+            return "Snapshot: --"
         }
         return "Snapshot: \(relativeTime(from: now, to: usage.capturedAt))"
     }

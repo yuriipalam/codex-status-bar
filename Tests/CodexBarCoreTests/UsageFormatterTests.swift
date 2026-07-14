@@ -29,9 +29,9 @@ struct UsageFormatterTests {
 
     @Test
     func missingWindowsAreReadable() {
-        #expect(UsageFormatter.leftLine(nil, fallbackLabel: "5h") == "5h left: unavailable")
-        #expect(UsageFormatter.resetLine(nil, fallbackLabel: "Week", now: Date(timeIntervalSince1970: 0)) == "Week reset: unavailable")
-        #expect(UsageFormatter.snapshotLine(nil, now: Date(timeIntervalSince1970: 0)) == "Snapshot: unavailable")
+        #expect(UsageFormatter.leftLine(nil, fallbackLabel: "5h") == "5h left: --")
+        #expect(UsageFormatter.resetLine(nil, fallbackLabel: "Week", now: Date(timeIntervalSince1970: 0)) == "Week reset: --")
+        #expect(UsageFormatter.snapshotLine(nil, now: Date(timeIntervalSince1970: 0)) == "Snapshot: --")
     }
 
     @Test

@@ -112,6 +112,17 @@ struct RolloutParserTests {
     }
 
     @Test
+    func imageGenerationEventsMapToImageStatus() {
+        let parsed = parser.parse(lines: [
+            event("2026-06-24T20:00:00.000Z", "task_started"),
+            responseItem("2026-06-24T20:00:05.000Z", type: "image_generation_call", fields: [:]),
+            event("2026-06-24T20:00:10.000Z", "image_generation_end"),
+        ])
+
+        #expect(parsed.latestStatusLabel == "Inspecting image")
+    }
+
+    @Test
     func reasoningAndGoalEventsAreLabeled() {
         let parsed = parser.parse(lines: [
             event("2026-06-24T20:00:00.000Z", "task_started"),
@@ -120,6 +131,42 @@ struct RolloutParserTests {
         ])
 
         #expect(parsed.latestStatusLabel == "Updating goal")
+    }
+
+    @Test
+    func observedEventTypesMapToCompactStatuses() {
+        let parsed = parser.parse(lines: [
+            event("2026-06-24T20:00:00.000Z", "task_started"),
+            event("2026-06-24T20:00:05.000Z", "agent_reasoning"),
+            event("2026-06-24T20:00:10.000Z", "thread_settings_applied"),
+            event("2026-06-24T20:00:15.000Z", "thread_rolled_back"),
+        ])
+
+        #expect(parsed.latestStatusLabel == "Rolling back")
+    }
+
+    @Test
+    func topLevelCompactedEventMapsToCompactingContext() {
+        let parsed = parser.parse(lines: [
+            event("2026-06-24T20:00:00.000Z", "task_started"),
+            """
+            {"timestamp":"2026-06-24T20:00:05.000Z","type":"compacted","payload":{}}
+            """,
+        ])
+
+        #expect(parsed.latestStatusLabel == "Compacting context")
+    }
+
+    @Test
+    func unknownResponseItemTypeKeepsLastKnownStatusFallback() {
+        let parsed = parser.parse(lines: [
+            event("2026-06-24T20:00:00.000Z", "task_started"),
+            responseItem("2026-06-24T20:00:05.000Z", type: "function_call", fields: ["name": "exec_command"]),
+            responseItem("2026-06-24T20:00:10.000Z", type: "future_item_type", fields: [:]),
+        ])
+
+        #expect(parsed.hasOpenTask)
+        #expect(parsed.latestStatusLabel == "Running command")
     }
 
     @Test
@@ -157,6 +204,21 @@ struct RolloutParserTests {
         #expect(parsed.usage?.secondary?.label == "week")
         #expect(parsed.usage?.secondary?.leftPercent == 53.5)
         #expect(parsed.usage?.planType == "prolite")
+    }
+
+    @Test
+    func weeklyOnlyLimitInPrimarySlotIsClassifiedByDuration() {
+        let parsed = parser.parse(lines: [
+            """
+            {"timestamp":"2026-07-12T20:56:49.714Z","type":"event_msg","payload":{"type":"token_count","rate_limits":{"primary":{"used_percent":2,"window_minutes":10080,"resets_at":1784492712},"secondary":null,"plan_type":"prolite"}}}
+            """,
+        ])
+
+        #expect(parsed.usage?.primary == nil)
+        #expect(parsed.usage?.secondary?.label == "week")
+        #expect(parsed.usage?.secondary?.leftPercent == 98)
+        #expect(parsed.usage?.secondary?.windowMinutes == 10_080)
+        #expect(parsed.usage?.secondary?.resetsAt == Date(timeIntervalSince1970: 1_784_492_712))
     }
 
     @Test

@@ -81,6 +81,8 @@ public enum StatusLabelMapper {
             return "Reading results"
         case "Viewing image":
             return "Inspecting image"
+        case "Creating image":
+            return "Inspecting image"
         case "Reading", "Reading email", "Querying data":
             return "Reviewing data"
         case "Using app":

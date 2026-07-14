@@ -198,6 +198,10 @@ public enum CodexBarPresentation {
              "Inspecting image",
              "Compacting context":
             return "Working"
+        case "Applying settings":
+            return "Settings"
+        case "Rolling back":
+            return "Rolling back"
         case "Searching web":
             return "Web search"
         case "Searching tools":
